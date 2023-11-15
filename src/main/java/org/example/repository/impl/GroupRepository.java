@@ -22,7 +22,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
     }
 
     @Override
-    public Group findById(Long id) {
+    public Group findById(Long id) throws SQLException {
         Group group = new Group();
         Coach coach = new Coach();
         List<Client> clients = new ArrayList<>();
@@ -44,16 +44,12 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             }
             group.setCoach(coach);
             group.setClients(clients);
-
             return group;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(Long id) throws SQLException {
         String removeLinks = "delete from clients_groups where id_group = ?;";
         String deleteById = "delete from groups where id=?";
         try (PreparedStatement preparedStatement = connection
@@ -61,14 +57,11 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             preparedStatement.setLong(1, id);
             preparedStatement.setLong(2, id);
             return preparedStatement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
     @Override
-    public List<Group> findAll() {
+    public List<Group> findAll() throws SQLException {
         String getAllId = "select g.id from groups g left join clients_groups cg on g.id=cg.id_group group by g.id";
 
         try (PreparedStatement stmt = connection.prepareStatement(getAllId)) {
@@ -84,32 +77,26 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
                 groups.add(findById(index));
             }
             return groups;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Group save(Group group) {
+    public Group save(Group group) throws SQLException {
         String saveGroup = "insert into groups(name, id_coach) values (?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(saveGroup)) {
             preparedStatement.setString(1, group.getName());
             preparedStatement.setLong(2, group.getCoach().getId());
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return group;
     }
 
-    public boolean changeCoach(Group group, Coach newCoach) {
+    public boolean changeCoach(Group group, Coach newCoach) throws SQLException {
         String setNewCoach = "update groups set id_coach=? where id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(setNewCoach)) {
             preparedStatement.setLong(1, newCoach.getId());
             preparedStatement.setLong(2, group.getId());
             return preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 }

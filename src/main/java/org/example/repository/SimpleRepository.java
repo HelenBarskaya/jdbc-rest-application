@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface SimpleRepository<T, K> {
 
-    T findById(K id);
+    T findById(K id) throws SQLException;
 
-    boolean deleteById(K id);
+    boolean deleteById(K id) throws SQLException;
 
     List<T> findAll() throws SQLException, IOException;
 
-    T save(T t);
+    T save(T t) throws SQLException;
 }

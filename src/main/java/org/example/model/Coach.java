@@ -9,9 +9,6 @@ public class Coach {
     private String phoneNumber;
     private List<Group> groups;
 
-    public Coach() {
-    }
-
     public long getId() {
         return id;
     }

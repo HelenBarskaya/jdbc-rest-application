@@ -5,10 +5,7 @@ import org.example.model.Coach;
 import org.example.model.Group;
 import org.example.repository.SimpleRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,13 +18,26 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
         connection = ConnectionManager.getConnection();
     }
 
+    public Coach changePhoneNumber(Coach coach) throws SQLException {
+        String updatePhoneNumber = "update coaches set phone_number=? where id=?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updatePhoneNumber,
+                Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, coach.getPhoneNumber());
+            preparedStatement.setLong(2, coach.getId());
+            preparedStatement.execute();
+
+            return returnSavedCoach(preparedStatement);
+        }
+    }
+
     @Override
-    public Coach findById(Long id) {
+    public Coach findById(Long id) throws SQLException {
         Coach coach = new Coach();
         List<Group> groups = new ArrayList<>();
+
         String selectById = "select c.id, c.firstname, c.lastname, c.phone_number, g.id from coaches c " +
                 "left join groups g on c.id=g.id_coach where c.id=?";
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(selectById)) {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
@@ -41,29 +51,23 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
                 group.setId(rs.getLong(5));
                 groups.add(group);
             }
-
             coach.setGroups(groups);
             return coach;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(Long id) throws SQLException {
         groupRepository.deleteById(id);
         String deleteById = "delete from coaches where id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteById)) {
             preparedStatement.setLong(1, id);
             return preparedStatement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
     @Override
-    public List<Coach> findAll() {
+    public List<Coach> findAll() throws SQLException {
         String getAllId = "select c.id from coaches c left join groups g on c.id=g.id_coach group by c.id";
         try (PreparedStatement stmt = connection.prepareStatement(getAllId)) {
             ResultSet rs = stmt.executeQuery();
@@ -78,24 +82,32 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
                 coaches.add(findById(index));
             }
             return coaches;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Coach save(Coach coach) {
+    public Coach save(Coach coach) throws SQLException {
         String saveCoach = "insert into coaches(firstname, lastname,phone_number) values (?, ?, ?)";
         try (PreparedStatement preparedStatement = connection
-                .prepareStatement(saveCoach)) {
+                .prepareStatement(saveCoach, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, coach.getFirstName());
             preparedStatement.setString(2, coach.getLastName());
             preparedStatement.setString(3, coach.getPhoneNumber());
             preparedStatement.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return returnSavedCoach(preparedStatement);
         }
-        return coach;
+    }
+
+    private Coach returnSavedCoach(PreparedStatement preparedStatement) throws SQLException {
+        Coach savedCoach = new Coach();
+        try(ResultSet key = preparedStatement.getGeneratedKeys()) {
+            key.next();
+            savedCoach.setId(key.getLong("id"));
+            savedCoach.setFirstName(key.getString("firstname"));
+            savedCoach.setLastName(key.getString("lastname"));
+            savedCoach.setPhoneNumber(key.getString("phone_number"));
+        }
+        return savedCoach;
     }
 }
