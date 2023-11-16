@@ -1,14 +1,14 @@
-package org.example.model;
+package org.example.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Coach {
+public class ClientDto {
     private long id;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private List<Group> groups = new ArrayList<>();
+    private List<GroupDto> groups = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -42,19 +42,11 @@ public class Coach {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<Group> getGroups() {
+    public List<GroupDto> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<Group> groups) {
+    public void setGroups(List<GroupDto> groups) {
         this.groups = groups;
-    }
-
-    public boolean addGroup(Group group) {
-        return groups.add(group);
-    }
-
-    public boolean removeGroup(Group group) {
-        return groups.remove(group);
     }
 }

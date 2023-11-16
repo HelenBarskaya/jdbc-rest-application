@@ -1,13 +1,14 @@
-package org.example.model;
+package org.example.dto;
 
-import java.util.ArrayList;
+import org.example.model.Coach;
+
 import java.util.List;
 
-public class Group {
+public class GroupDto {
     private long id;
     private String name;
     private Coach coach;
-    private List<Client> clients = new ArrayList<>();
+    private List<ClientDto> clients;
 
     public long getId() {
         return id;
@@ -33,11 +34,11 @@ public class Group {
         this.coach = coach;
     }
 
-    public List<Client> getClients() {
+    public List<ClientDto> getClients() {
         return clients;
     }
 
-    public void setClients(List<Client> clients) {
+    public void setClients(List<ClientDto> clients) {
         this.clients = clients;
     }
 }
