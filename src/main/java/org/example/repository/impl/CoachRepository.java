@@ -18,19 +18,6 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
         connection = ConnectionManager.getConnection();
     }
 
-    public Coach changePhoneNumber(Coach coach) throws SQLException {
-        String updatePhoneNumber = "update coaches set phone_number=? where id=?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(updatePhoneNumber,
-                Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, coach.getPhoneNumber());
-            preparedStatement.setLong(2, coach.getId());
-            preparedStatement.execute();
-
-            return returnSavedCoach(preparedStatement);
-        }
-    }
-
     @Override
     public Coach findById(Long id) throws SQLException {
         Coach coach = new Coach();
@@ -42,17 +29,19 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                coach.setId(rs.getLong(1));
-                coach.setFirstName(rs.getString(2));
-                coach.setLastName(rs.getString(3));
-                coach.setPhoneNumber(rs.getString(4));
-                Group group = new Group();
-                group.setId(rs.getLong(5));
-                groups.add(group);
-            }
-            coach.setGroups(groups);
-            return coach;
+            if (rs.next()){
+                do {
+                    coach.setId(rs.getLong(1));
+                    coach.setFirstName(rs.getString(2));
+                    coach.setLastName(rs.getString(3));
+                    coach.setPhoneNumber(rs.getString(4));
+                    Group group = new Group();
+                    group.setId(rs.getLong(5));
+                    groups.add(group);
+                } while (rs.next());
+                coach.setGroups(groups);
+                return coach;
+            } else throw new SQLException();
         }
     }
 
@@ -62,7 +51,8 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
         String deleteById = "delete from coaches where id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteById)) {
             preparedStatement.setLong(1, id);
-            return preparedStatement.execute();
+            preparedStatement.execute();
+            return true;
         }
     }
 
@@ -94,6 +84,34 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
             preparedStatement.setString(2, coach.getLastName());
             preparedStatement.setString(3, coach.getPhoneNumber());
             preparedStatement.executeUpdate();
+
+            return returnSavedCoach(preparedStatement);
+        }
+    }
+
+    public Coach update(Coach coach) throws SQLException {
+        String updateClient = "Update coaches set firstname=?, lastname=?, phone_number=? where id=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateClient)) {
+            preparedStatement.setString(1, coach.getFirstName());
+            preparedStatement.setString(2, coach.getLastName());
+            preparedStatement.setString(3, coach.getPhoneNumber());
+            preparedStatement.setLong(4, coach.getId());
+            int resp = preparedStatement.executeUpdate();
+
+            if (resp == 0) throw new SQLException();
+
+            return coach;
+        }
+    }
+
+    public Coach changePhoneNumber(Coach coach) throws SQLException {
+        String updatePhoneNumber = "update coaches set phone_number=? where id=?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updatePhoneNumber,
+                Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, coach.getPhoneNumber());
+            preparedStatement.setLong(2, coach.getId());
+            preparedStatement.execute();
 
             return returnSavedCoach(preparedStatement);
         }

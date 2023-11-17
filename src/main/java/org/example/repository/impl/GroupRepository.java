@@ -6,10 +6,7 @@ import org.example.model.Coach;
 import org.example.model.Group;
 import org.example.repository.SimpleRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +31,19 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                group.setId(rs.getLong(1));
-                group.setName(rs.getString(2));
-                coach.setId(rs.getLong(3));
-                Client client = new Client();
-                client.setId(rs.getLong(4));
-                clients.add(client);
-            }
-            group.setCoach(coach);
-            group.setClients(clients);
-            return group;
+            if (rs.next()) {
+                do {
+                    group.setId(rs.getLong(1));
+                    group.setName(rs.getString(2));
+                    coach.setId(rs.getLong(3));
+                    Client client = new Client();
+                    client.setId(rs.getLong(4));
+                    clients.add(client);
+                } while (rs.next());
+                group.setCoach(coach);
+                group.setClients(clients);
+                return group;
+            } else throw new SQLException();
         }
     }
 
@@ -56,7 +55,8 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
                 .prepareStatement(removeLinks + deleteById)) {
             preparedStatement.setLong(1, id);
             preparedStatement.setLong(2, id);
-            return preparedStatement.execute();
+            preparedStatement.execute();
+            return true;
         }
     }
 
@@ -83,20 +83,37 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
     @Override
     public Group save(Group group) throws SQLException {
         String saveGroup = "insert into groups(name, id_coach) values (?,?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(saveGroup)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(saveGroup, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, group.getName());
             preparedStatement.setLong(2, group.getCoach().getId());
-            preparedStatement.executeUpdate();
+            preparedStatement.executeQuery();
+
+            Group savedGroup = new Group();
+            try (ResultSet key = preparedStatement.getGeneratedKeys()) {
+                Coach coach = new Coach();
+                coach.setId(key.getLong("id_coach"));
+
+                savedGroup.setId(key.getLong("id"));
+                savedGroup.setName(key.getString("name"));
+                savedGroup.setCoach(coach);
+
+                return savedGroup;
+            }
         }
-        return group;
     }
 
-    public boolean changeCoach(Group group, Coach newCoach) throws SQLException {
-        String setNewCoach = "update groups set id_coach=? where id=?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(setNewCoach)) {
-            preparedStatement.setLong(1, newCoach.getId());
-            preparedStatement.setLong(2, group.getId());
-            return preparedStatement.execute();
+    public Group update(Group group) throws SQLException {
+        String updateGroup = "Update groups set name=?, id_coach=? where id=?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateGroup)) {
+            preparedStatement.setString(1, group.getName());
+            preparedStatement.setLong(2, group.getCoach().getId());
+            preparedStatement.setLong(3, group.getId());
+            int resp = preparedStatement.executeUpdate();
+
+            if (resp == 0) throw new SQLException();
+
+            return group;
         }
     }
 }

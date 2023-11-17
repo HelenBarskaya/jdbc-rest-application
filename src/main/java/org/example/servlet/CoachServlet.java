@@ -2,7 +2,6 @@ package org.example.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +44,6 @@ public class CoachServlet extends HttpServlet {
                 jsonMapper.writeValue(resp.getWriter(), dto);
                 resp.setStatus(HttpServletResponse.SC_OK);
             } catch (SQLException e) {
-                // TODO: 16.11.2023 Сделать так чтобы исключения выбрасывались
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } else {
@@ -60,7 +58,6 @@ public class CoachServlet extends HttpServlet {
                 jsonMapper.writeValue(resp.getWriter(), coachDto);
                 resp.setStatus(HttpServletResponse.SC_OK);
             } catch (SQLException e) {
-                // TODO: 16.11.2023 Сделать так чтобы исключения выбрасывались
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         }
@@ -72,14 +69,18 @@ public class CoachServlet extends HttpServlet {
             CoachDto coachDto = jsonMapper.readValue(req.getInputStream(), CoachDto.class);
             coachService.save(coachMapper.coachDtoToCoach(coachDto));
         } catch (SQLException e) {
-            // TODO: 16.11.2023 Сделать так чтобы исключения выбрасывались
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        // TODO: 16.11.2023
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            CoachDto coachDto = jsonMapper.readValue(req.getInputStream(), CoachDto.class);
+            coachService.update(coachMapper.coachDtoToCoach(coachDto));
+        } catch (SQLException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 
     @Override

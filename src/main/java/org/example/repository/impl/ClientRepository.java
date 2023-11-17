@@ -17,19 +17,6 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
         connection = ConnectionManager.getConnection();
     }
 
-    public Client changePhoneNumber(Client client) throws SQLException {
-        String updatePhoneNumber = "update clients set phone_number=? where id=?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(updatePhoneNumber,
-                Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, client.getPhoneNumber());
-            preparedStatement.setLong(2, client.getId());
-            preparedStatement.execute();
-
-            return returnSavedClient(preparedStatement);
-        }
-    }
-
     @Override
     public Client findById(Long id) throws SQLException {
         Client client = new Client();
@@ -42,18 +29,20 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                client.setId(rs.getLong(1));
-                client.setFirstName(rs.getString(2));
-                client.setLastName(rs.getString(3));
-                client.setPhoneNumber(rs.getString(4));
+            if (rs.next()) {
+                do {
+                    client.setId(rs.getLong(1));
+                    client.setFirstName(rs.getString(2));
+                    client.setLastName(rs.getString(3));
+                    client.setPhoneNumber(rs.getString(4));
 
-                Group group = new Group();
-                group.setId(rs.getLong(5));
-                groups.add(group);
-            }
-            client.setGroups(groups);
-            return client;
+                    Group group = new Group();
+                    group.setId(rs.getLong(5));
+                    groups.add(group);
+                } while (rs.next());
+                client.setGroups(groups);
+                return client;
+            } else throw new SQLException();
         }
     }
 
@@ -64,7 +53,8 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
         try (PreparedStatement preparedStatement = connection.prepareStatement(removeLinks + deleteById)) {
             preparedStatement.setLong(1, id);
             preparedStatement.setLong(2, id);
-            return preparedStatement.execute();
+            preparedStatement.execute();
+            return true;
         }
     }
 
@@ -98,6 +88,21 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
             preparedStatement.executeUpdate();
 
             return returnSavedClient(preparedStatement);
+        }
+    }
+
+    public Client update(Client client) throws SQLException {
+        String updateClient = "Update clients set firstname=?, lastname=?, phone_number=? where id=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateClient)) {
+            preparedStatement.setString(1, client.getFirstName());
+            preparedStatement.setString(2, client.getLastName());
+            preparedStatement.setString(3, client.getPhoneNumber());
+            preparedStatement.setLong(4, client.getId());
+            int resp = preparedStatement.executeUpdate();
+
+            if (resp == 0) throw new SQLException();
+
+            return client;
         }
     }
 

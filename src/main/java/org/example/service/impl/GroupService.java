@@ -53,7 +53,7 @@ public class GroupService implements SimpleService<Group> {
         return groupRepository.deleteById(id);
     }
 
-    public boolean changeCoach(Group group, Coach newCoach) throws SQLException {
-        return groupRepository.changeCoach(group, newCoach);
+    public Group update(Group group) throws SQLException {
+        return groupRepository.update(group);
     }
 }

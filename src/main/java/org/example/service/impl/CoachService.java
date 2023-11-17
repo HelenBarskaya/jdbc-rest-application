@@ -43,7 +43,7 @@ public class CoachService implements SimpleService<Coach> {
         return coachRepository.deleteById(id);
     }
 
-    public Coach changePhoneNumber(Coach coach) throws SQLException {
-        return coachRepository.changePhoneNumber(coach);
+    public Coach update(Coach coach) throws SQLException {
+        return coachRepository.update(coach);
     }
 }

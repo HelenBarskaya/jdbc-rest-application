@@ -43,8 +43,8 @@ public class ClientService implements SimpleService<Client> {
         return clientRepository.deleteById(id);
     }
 
-    public Client changePhoneNumber(Client updatedClient) throws SQLException {
-        return clientRepository.changePhoneNumber(updatedClient);
+    public Client update(Client client) throws SQLException {
+        return clientRepository.update(client);
     }
 
     public Group addGroup(Client client, Group group) throws SQLException {

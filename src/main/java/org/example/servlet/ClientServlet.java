@@ -2,7 +2,6 @@ package org.example.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -77,8 +76,14 @@ public class ClientServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        // TODO: 16.11.2023
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            ClientDto clientDto = jsonMapper.readValue(req.getInputStream(), ClientDto.class);
+            clientService.update(clientMapper.clientDtoToClient(clientDto));
+        } catch (SQLException e) {
+            // TODO: 16.11.2023 Сделать так чтобы исключения выбрасывались
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 
     @Override
@@ -92,6 +97,7 @@ public class ClientServlet extends HttpServlet {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } else {
+            // TODO: 16.11.2023 Сделать так чтобы исключения выбрасывались
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
