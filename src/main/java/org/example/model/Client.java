@@ -10,6 +10,15 @@ public class Client {
     private String phoneNumber;
     private List<Group> groups = new ArrayList<>();
 
+    public Client() {
+    }
+
+    public Client(String firstName, String lastName, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+    }
+
     public long getId() {
         return id;
     }
@@ -56,5 +65,25 @@ public class Client {
 
     public boolean removeGroup(Group group) {
         return groups.remove(group);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o.getClass() != this.getClass()) return false;
+        Client client = (Client) o;
+        if (id != client.getId()) return false;
+        if (!getFirstName().equals(client.getFirstName())) return false;
+        if (!getLastName().equals(client.getLastName())) return false;
+        return getPhoneNumber().equals(client.getPhoneNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) id;
+        result = 31 * result + getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + getPhoneNumber().hashCode();
+        return result;
     }
 }

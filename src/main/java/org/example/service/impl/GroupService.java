@@ -8,7 +8,6 @@ import org.example.repository.impl.CoachRepository;
 import org.example.repository.impl.GroupRepository;
 import org.example.service.SimpleService;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class GroupService implements SimpleService<Group> {
@@ -17,24 +16,22 @@ public class GroupService implements SimpleService<Group> {
     CoachRepository coachRepository = new CoachRepository();
 
     @Override
-    public Group save(Group entity) throws SQLException {
+    public Group save(Group entity) {
         return groupRepository.save(entity);
     }
 
     @Override
-    public Group findById(Long id) throws SQLException {
+    public Group findById(Long id) {
         Group group = groupRepository.findById(id);
         Coach coach = coachRepository.findById(group.getCoach().getId());
         List<Client> clients = group.getClients();
 
-        for (int i = 0; i < clients.size(); i++) {
-            clients.set(i, clientRepository.findById(clients.get(i).getId()));
-        }
+        clients.replaceAll(client -> clientRepository.findById(client.getId()));
         group.setCoach(coach);
         return group;
     }
 
-    public List<Group> findAll() throws SQLException {
+    public List<Group> findAll() {
         List<Group> groups = groupRepository.findAll();
 
         for (Group group : groups) {
@@ -42,18 +39,16 @@ public class GroupService implements SimpleService<Group> {
             group.setCoach(coach);
 
             List<Client> clients = group.getClients();
-            for (int j = 0; j < clients.size(); j++) {
-                clients.set(j, clientRepository.findById(clients.get(j).getId()));
-            }
+            clients.replaceAll(client -> clientRepository.findById(client.getId()));
         }
         return groups;
     }
 
-    public boolean deleteById(Long id) throws SQLException {
+    public boolean deleteById(Long id) {
         return groupRepository.deleteById(id);
     }
 
-    public Group update(Group group) throws SQLException {
+    public Group update(Group group) {
         return groupRepository.update(group);
     }
 }

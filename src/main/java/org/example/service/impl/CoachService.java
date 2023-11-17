@@ -6,44 +6,41 @@ import org.example.repository.impl.CoachRepository;
 import org.example.repository.impl.GroupRepository;
 import org.example.service.SimpleService;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class CoachService implements SimpleService<Coach> {
     CoachRepository coachRepository = new CoachRepository();
     GroupRepository groupRepository = new GroupRepository();
 
+
+
     @Override
-    public Coach save(Coach entity) throws SQLException {
+    public Coach save(Coach entity){
         return coachRepository.save(entity);
     }
 
     @Override
-    public Coach findById(Long id) throws SQLException {
+    public Coach findById(Long id){
         Coach coach = coachRepository.findById(id);
         List<Group> groups = coach.getGroups();
-        for (int i = 0; i < groups.size(); i++) {
-            groups.set(i, groupRepository.findById(groups.get(i).getId()));
-        }
+        groups.replaceAll(group -> groupRepository.findById(group.getId()));
         return coach;
     }
 
-    public List<Coach> findAll() throws SQLException {
+    public List<Coach> findAll(){
         List<Coach> coaches = coachRepository.findAll();
         for (Coach coach : coaches) {
             List<Group> groups = coach.getGroups();
-            for (int j = 0; j < groups.size(); j++) {
-                groups.set(j, groupRepository.findById(groups.get(j).getId()));
-            }
+            groups.replaceAll(group -> groupRepository.findById(group.getId()));
         }
         return coaches;
     }
 
-    public boolean deleteById(Long id) throws SQLException {
+    public boolean deleteById(Long id){
         return coachRepository.deleteById(id);
     }
 
-    public Coach update(Coach coach) throws SQLException {
+    public Coach update(Coach coach){
         return coachRepository.update(coach);
     }
 }

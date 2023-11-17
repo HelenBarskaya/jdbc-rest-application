@@ -6,7 +6,6 @@ import org.example.repository.impl.ClientRepository;
 import org.example.repository.impl.GroupRepository;
 import org.example.service.SimpleService;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class ClientService implements SimpleService<Client> {
@@ -14,44 +13,40 @@ public class ClientService implements SimpleService<Client> {
     ClientRepository clientRepository = new ClientRepository();
 
     @Override
-    public Client save(Client entity) throws SQLException {
+    public Client save(Client entity) {
         return clientRepository.save(entity);
     }
 
     @Override
-    public Client findById(Long id) throws SQLException {
+    public Client findById(Long id) {
         Client client = clientRepository.findById(id);
         List<Group> groups = client.getGroups();
-        for (int i = 0; i < groups.size(); i++) {
-            groups.set(i, groupRepository.findById(groups.get(i).getId()));
-        }
+        groups.replaceAll(group -> groupRepository.findById(group.getId()));
         return client;
     }
 
-    public List<Client> findAll() throws SQLException {
+    public List<Client> findAll() {
         List<Client> clients = clientRepository.findAll();
         for (Client client : clients) {
             List<Group> groups = client.getGroups();
-            for (int j = 0; j < groups.size(); j++) {
-                groups.set(j, groupRepository.findById(groups.get(j).getId()));
-            }
+            groups.replaceAll(group -> groupRepository.findById(group.getId()));
         }
         return clients;
     }
 
-    public boolean deleteById(Long id) throws SQLException {
+    public boolean deleteById(Long id) {
         return clientRepository.deleteById(id);
     }
 
-    public Client update(Client client) throws SQLException {
+    public Client update(Client client) {
         return clientRepository.update(client);
     }
 
-    public Group addGroup(Client client, Group group) throws SQLException {
+    public Group addGroup(Client client, Group group) {
         return clientRepository.addGroup(client, group);
     }
 
-    public boolean removeGroup(Client client, Group group) throws SQLException {
+    public boolean removeGroup(Client client, Group group) {
         return clientRepository.removeGroup(client, group);
     }
 }

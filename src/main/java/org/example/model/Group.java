@@ -40,4 +40,22 @@ public class Group {
     public void setClients(List<Client> clients) {
         this.clients = clients;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o.getClass() != this.getClass()) return false;
+        Group group = (Group) o;
+        if (id != group.getId()) return false;
+        if (!getName().equals(group.getName())) return false;
+        return (!getCoach().equals(group.getCoach()));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) id;
+        result = 31 * result + getName().hashCode();
+        result = 31 * result + getCoach().hashCode();
+        return result;
+    }
 }

@@ -1,7 +1,7 @@
 package org.example.database;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,9 +15,7 @@ public class ConnectionManager {
     }
 
     public static Connection getConnection() {
-        if (connection != null)
-            return connection;
-        else {
+        if (connection == null) {
             try {
                 Properties props = PropertiesLoader.loadProperty();
 
@@ -26,13 +24,14 @@ public class ConnectionManager {
                 String password = props.getProperty("db.password");
 
                 connection = DriverManager.getConnection(url, username, password);
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            return connection;
         }
+
+        return connection;
     }
 
     public static class PropertiesLoader {
@@ -43,10 +42,9 @@ public class ConnectionManager {
 
         public static Properties loadProperty() throws IOException {
             if (properties.isEmpty()) {
-                String dbSettingsPropertyFile = "src/main/resources/database.properties";
-                try (FileReader fReader = new FileReader(dbSettingsPropertyFile)) {
-                    properties.load(fReader);
-                }
+                InputStream inputStream = ConnectionManager.class.getClassLoader()
+                        .getResourceAsStream("database.properties");
+                properties.load(inputStream);
             }
             return properties;
         }

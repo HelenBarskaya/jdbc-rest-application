@@ -19,7 +19,7 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
     }
 
     @Override
-    public Coach findById(Long id) throws SQLException {
+    public Coach findById(Long id) {
         Coach coach = new Coach();
         List<Group> groups = new ArrayList<>();
 
@@ -29,7 +29,7 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
-            if (rs.next()){
+            if (rs.next()) {
                 do {
                     coach.setId(rs.getLong(1));
                     coach.setFirstName(rs.getString(2));
@@ -41,23 +41,28 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
                 } while (rs.next());
                 coach.setGroups(groups);
                 return coach;
-            } else throw new SQLException();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+        return null;
     }
 
     @Override
-    public boolean deleteById(Long id) throws SQLException {
+    public boolean deleteById(Long id) {
         groupRepository.deleteById(id);
         String deleteById = "delete from coaches where id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteById)) {
             preparedStatement.setLong(1, id);
             preparedStatement.execute();
             return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Coach> findAll() throws SQLException {
+    public List<Coach> findAll() {
         String getAllId = "select c.id from coaches c left join groups g on c.id=g.id_coach group by c.id";
         try (PreparedStatement stmt = connection.prepareStatement(getAllId)) {
             ResultSet rs = stmt.executeQuery();
@@ -72,11 +77,13 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
                 coaches.add(findById(index));
             }
             return coaches;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Coach save(Coach coach) throws SQLException {
+    public Coach save(Coach coach) {
         String saveCoach = "insert into coaches(firstname, lastname,phone_number) values (?, ?, ?)";
         try (PreparedStatement preparedStatement = connection
                 .prepareStatement(saveCoach, Statement.RETURN_GENERATED_KEYS)) {
@@ -86,10 +93,12 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
             preparedStatement.executeUpdate();
 
             return returnSavedCoach(preparedStatement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public Coach update(Coach coach) throws SQLException {
+    public Coach update(Coach coach) {
         String updateClient = "Update coaches set firstname=?, lastname=?, phone_number=? where id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateClient)) {
             preparedStatement.setString(1, coach.getFirstName());
@@ -101,10 +110,12 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
             if (resp == 0) throw new SQLException();
 
             return coach;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public Coach changePhoneNumber(Coach coach) throws SQLException {
+    public Coach changePhoneNumber(Coach coach) {
         String updatePhoneNumber = "update coaches set phone_number=? where id=?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(updatePhoneNumber,
@@ -114,18 +125,22 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
             preparedStatement.execute();
 
             return returnSavedCoach(preparedStatement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private Coach returnSavedCoach(PreparedStatement preparedStatement) throws SQLException {
-        Coach savedCoach = new Coach();
-        try(ResultSet key = preparedStatement.getGeneratedKeys()) {
+    private Coach returnSavedCoach(PreparedStatement preparedStatement) {
+        try (ResultSet key = preparedStatement.getGeneratedKeys()) {
+            Coach savedCoach = new Coach();
             key.next();
             savedCoach.setId(key.getLong("id"));
             savedCoach.setFirstName(key.getString("firstname"));
             savedCoach.setLastName(key.getString("lastname"));
             savedCoach.setPhoneNumber(key.getString("phone_number"));
+            return savedCoach;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return savedCoach;
     }
 }

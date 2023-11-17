@@ -57,4 +57,24 @@ public class Coach {
     public boolean removeGroup(Group group) {
         return groups.remove(group);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o.getClass() != this.getClass()) return false;
+        Coach coach = (Coach) o;
+        if (id != coach.getId()) return false;
+        if (!getFirstName().equals(coach.getFirstName())) return false;
+        if (!getLastName().equals(coach.getLastName())) return false;
+        return getPhoneNumber().equals(coach.getPhoneNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) id;
+        result = 31 * result + getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + getPhoneNumber().hashCode();
+        return result;
+    }
 }
