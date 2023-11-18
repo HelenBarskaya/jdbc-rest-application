@@ -9,6 +9,14 @@ public class Group {
     private Coach coach;
     private List<Client> clients = new ArrayList<>();
 
+    public Group() {
+    }
+
+    public Group(String name, Coach coach) {
+        this.name = name;
+        this.coach = coach;
+    }
+
     public long getId() {
         return id;
     }
@@ -48,14 +56,14 @@ public class Group {
         Group group = (Group) o;
         if (id != group.getId()) return false;
         if (!getName().equals(group.getName())) return false;
-        return (!getCoach().equals(group.getCoach()));
+        return (getCoach().getId() == (group.getCoach().getId()));
     }
 
     @Override
     public int hashCode() {
         int result = (int) id;
         result = 31 * result + getName().hashCode();
-        result = 31 * result + getCoach().hashCode();
+        result = 31 * result + (int) getCoach().getId();
         return result;
     }
 }

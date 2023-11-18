@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.database.ConnectionManager;
 import org.example.dto.CoachDto;
 import org.example.repository.mapping.CoachMapper;
 import org.example.model.Coach;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @WebServlet("/coach")
 public class CoachServlet extends HttpServlet {
+    ConnectionManager connectionManager;
     CoachService coachService;
     CoachMapper coachMapper;
     ObjectMapper jsonMapper;
@@ -25,7 +27,8 @@ public class CoachServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) {
-        coachService = new CoachService();
+        connectionManager = new ConnectionManager();
+        coachService = new CoachService(connectionManager);
         coachMapper = Mappers.getMapper(CoachMapper.class);
         jsonMapper = new ObjectMapper();
     }

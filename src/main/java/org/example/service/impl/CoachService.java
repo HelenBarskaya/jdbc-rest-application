@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import org.example.database.ConnectionManager;
 import org.example.model.Coach;
 import org.example.model.Group;
 import org.example.repository.impl.CoachRepository;
@@ -9,10 +10,15 @@ import org.example.service.SimpleService;
 import java.util.List;
 
 public class CoachService implements SimpleService<Coach> {
-    CoachRepository coachRepository = new CoachRepository();
-    GroupRepository groupRepository = new GroupRepository();
+    ConnectionManager connectionManager;
+    CoachRepository coachRepository;
+    GroupRepository groupRepository;
 
-
+    public CoachService(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+        coachRepository = new CoachRepository(connectionManager);
+        groupRepository = new GroupRepository(connectionManager);
+    }
 
     @Override
     public Coach save(Coach entity){

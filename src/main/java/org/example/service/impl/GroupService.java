@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import org.example.database.ConnectionManager;
 import org.example.model.Client;
 import org.example.model.Coach;
 import org.example.model.Group;
@@ -11,9 +12,17 @@ import org.example.service.SimpleService;
 import java.util.List;
 
 public class GroupService implements SimpleService<Group> {
-    GroupRepository groupRepository = new GroupRepository();
-    ClientRepository clientRepository = new ClientRepository();
-    CoachRepository coachRepository = new CoachRepository();
+    ConnectionManager connectionManager;
+    GroupRepository groupRepository;
+    ClientRepository clientRepository;
+    CoachRepository coachRepository;
+
+    public GroupService(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+        groupRepository = new GroupRepository(connectionManager);
+        clientRepository = new ClientRepository(connectionManager);
+        coachRepository = new CoachRepository(connectionManager);
+    }
 
     @Override
     public Group save(Group entity) {

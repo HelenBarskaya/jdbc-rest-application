@@ -14,8 +14,8 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
 
     private final Connection connection;
 
-    public GroupRepository() {
-        connection = ConnectionManager.getConnection();
+    public GroupRepository(ConnectionManager connectionManager) {
+        connection = connectionManager.getConnection();
     }
 
     @Override
@@ -90,22 +90,14 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
     @Override
     public Group save(Group group) {
         String saveGroup = "insert into groups(name, id_coach) values (?,?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(saveGroup, Statement.RETURN_GENERATED_KEYS)) {
+
+        try (PreparedStatement preparedStatement = connection
+                .prepareStatement(saveGroup, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, group.getName());
             preparedStatement.setLong(2, group.getCoach().getId());
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
-            Group savedGroup = new Group();
-            try (ResultSet key = preparedStatement.getGeneratedKeys()) {
-                Coach coach = new Coach();
-                coach.setId(key.getLong("id_coach"));
-
-                savedGroup.setId(key.getLong("id"));
-                savedGroup.setName(key.getString("name"));
-                savedGroup.setCoach(coach);
-
-                return savedGroup;
-            }
+            return returnSavedGroup(preparedStatement);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -123,6 +115,22 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             if (resp == 0) throw new SQLException();
 
             return group;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Group returnSavedGroup(PreparedStatement preparedStatement){
+        Group savedGroup = new Group();
+        try (ResultSet key = preparedStatement.getGeneratedKeys()) {
+            Coach coach = new Coach();
+            key.next();
+            coach.setId(key.getLong("id_coach"));
+            savedGroup.setId(key.getLong("id"));
+            savedGroup.setName(key.getString("name"));
+            savedGroup.setCoach(coach);
+
+            return savedGroup;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

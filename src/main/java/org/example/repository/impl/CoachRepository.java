@@ -12,10 +12,11 @@ import java.util.List;
 public class CoachRepository implements SimpleRepository<Coach, Long> {
 
     private final Connection connection;
-    private final GroupRepository groupRepository = new GroupRepository();
+    private GroupRepository groupRepository;
 
-    public CoachRepository() {
-        connection = ConnectionManager.getConnection();
+    public CoachRepository(ConnectionManager connectionManager) {
+        groupRepository = new GroupRepository(connectionManager);
+        connection = connectionManager.getConnection();
     }
 
     @Override
@@ -85,6 +86,7 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
     @Override
     public Coach save(Coach coach) {
         String saveCoach = "insert into coaches(firstname, lastname,phone_number) values (?, ?, ?)";
+
         try (PreparedStatement preparedStatement = connection
                 .prepareStatement(saveCoach, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, coach.getFirstName());

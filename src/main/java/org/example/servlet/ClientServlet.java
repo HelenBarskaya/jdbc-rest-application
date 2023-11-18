@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.database.ConnectionManager;
 import org.example.dto.ClientDto;
 import org.example.repository.mapping.ClientMapper;
 import org.example.model.Client;
@@ -18,13 +19,15 @@ import java.util.List;
 
 @WebServlet("/client")
 public class ClientServlet extends HttpServlet {
+    ConnectionManager connectionManager;
     ClientService clientService;
     ClientMapper clientMapper;
     ObjectMapper jsonMapper;
 
     @Override
     public void init(ServletConfig config) {
-        clientService = new ClientService();
+        connectionManager = new ConnectionManager();
+        clientService = new ClientService(connectionManager);
         clientMapper = Mappers.getMapper(ClientMapper.class);
         jsonMapper = new ObjectMapper();
     }

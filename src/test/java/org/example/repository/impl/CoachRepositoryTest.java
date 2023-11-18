@@ -1,7 +1,7 @@
 package org.example.repository.impl;
 
 import org.example.database.ConnectionManager;
-import org.example.model.Client;
+import org.example.model.Coach;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -12,8 +12,7 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ClientRepositoryTest {
-
+class CoachRepositoryTest {
     static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres")
             .withTag("16.0"))
             .withDatabaseName("postgres-test-db")
@@ -21,7 +20,7 @@ class ClientRepositoryTest {
             .withPassword("password")
             .withInitScript("scripts/init-test-database.sql");
     ConnectionManager connectionManager = new ConnectionManager();
-    ClientRepository clientRepository;
+    CoachRepository coachRepository;
 
     @BeforeAll
     static void beforeAll() {
@@ -39,13 +38,13 @@ class ClientRepositoryTest {
         connectionManager.setUrl(postgreSQLContainer.getJdbcUrl());
         connectionManager.setUsername(postgreSQLContainer.getUsername());
         connectionManager.setPassword(postgreSQLContainer.getPassword());
-        clientRepository = new ClientRepository(connectionManager);
+        coachRepository = new CoachRepository(connectionManager);
     }
 
     @AfterEach
     void clear() {
         Connection connection = connectionManager.getConnection();
-        String clearTable = "Delete from clients";
+        String clearTable = "Delete from coaches";
         try (PreparedStatement preparedStatement = connection.prepareStatement(clearTable)) {
             preparedStatement.execute();
         } catch (SQLException e) {
@@ -54,35 +53,35 @@ class ClientRepositoryTest {
     }
 
     @Test
-    void createClientTest() {
-        Client client = clientRepository.save(new Client("Анна", "Ахматова", "89379120428"));
-        assertEquals(client, clientRepository.findById(client.getId()));
+    void createCoachTest() {
+        Coach coach = coachRepository.save(new Coach("Анна", "Ахматова", "89379120428"));
+        assertEquals(coach, coachRepository.findById(coach.getId()));
     }
 
     @Test
-    void deleteClientTest(){
-        Client client = clientRepository.save(new Client("Анна", "Ахматова", "89379120428"));
-        clientRepository.deleteById(client.getId());
-        assertNull(clientRepository.findById(client.getId()));
+    void deleteCoachTest(){
+        Coach coach = coachRepository.save(new Coach("Анна", "Ахматова", "89379120428"));
+        coachRepository.deleteById(coach.getId());
+        assertNull(coachRepository.findById(coach.getId()));
     }
 
     @Test
     void findAllTest(){
-        Client client1 = clientRepository.save(new Client("Маргарита", "Мастерова", "86666666666"));
-        Client client2 = clientRepository.save(new Client("Анна", "Ахматова", "89379120428"));
+        Coach coach1 = coachRepository.save(new Coach("Маргарита", "Мастерова", "86666666666"));
+        Coach coach2 = coachRepository.save(new Coach("Анна", "Ахматова", "89379120428"));
 
-        assertEquals(2, clientRepository.findAll().size());
-        assertEquals(client1, clientRepository.findById(client1.getId()));
-        assertEquals(client2, clientRepository.findById(client2.getId()));
+        assertEquals(2, coachRepository.findAll().size());
+        assertEquals(coach1, coachRepository.findById(coach1.getId()));
+        assertEquals(coach2, coachRepository.findById(coach2.getId()));
     }
 
     @Test
     void updateTest(){
-        Client client = clientRepository.save(new Client("Маргарита", "Мастерова", "86666666666"));
-        client.setFirstName("Мастер");
-        client.setLastName("Маргаритов");
-        clientRepository.update(client);
+        Coach coach = coachRepository.save(new Coach("Маргарита", "Мастерова", "86666666666"));
+        coach.setFirstName("Мастер");
+        coach.setLastName("Маргаритов");
+        coachRepository.update(coach);
 
-        assertEquals(client, clientRepository.findById(client.getId()));
+        assertEquals(coach, coachRepository.findById(coach.getId()));
     }
 }

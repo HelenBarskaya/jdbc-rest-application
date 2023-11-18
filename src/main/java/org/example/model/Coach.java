@@ -10,6 +10,15 @@ public class Coach {
     private String phoneNumber;
     private List<Group> groups = new ArrayList<>();
 
+    public Coach() {
+    }
+
+    public Coach(String firstName, String lastName, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+    }
+
     public long getId() {
         return id;
     }

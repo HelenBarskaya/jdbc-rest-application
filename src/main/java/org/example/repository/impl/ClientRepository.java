@@ -13,8 +13,8 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
 
     private final Connection connection;
 
-    public ClientRepository() {
-        connection = ConnectionManager.getConnection();
+    public ClientRepository(ConnectionManager connectionManager) {
+        connection = connectionManager.getConnection();
     }
 
     @Override

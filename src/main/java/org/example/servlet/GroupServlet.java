@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.database.ConnectionManager;
 import org.example.dto.GroupDto;
 import org.example.repository.mapping.GroupMapper;
 import org.example.model.Group;
@@ -18,14 +19,15 @@ import java.util.List;
 
 @WebServlet("/group")
 public class GroupServlet extends HttpServlet {
-
+    ConnectionManager connectionManager;
     GroupService groupService;
     GroupMapper groupMapper;
     ObjectMapper jsonMapper;
 
     @Override
     public void init(ServletConfig config) {
-        groupService = new GroupService();
+        connectionManager = new ConnectionManager();
+        groupService = new GroupService(connectionManager);
         groupMapper = Mappers.getMapper(GroupMapper.class);
         jsonMapper = new ObjectMapper();
     }

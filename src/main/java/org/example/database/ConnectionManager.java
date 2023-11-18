@@ -9,29 +9,31 @@ import java.util.Properties;
 
 public class ConnectionManager {
 
-    private static Connection connection = null;
+    private String url;
+    private String username;
+    private String password;
 
-    private ConnectionManager() {
+    public ConnectionManager() {
+        try {
+            Properties props = PropertiesLoader.loadProperty();
+
+            url = props.getProperty("db.url");
+            username = props.getProperty("db.username");
+            password = props.getProperty("db.password");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static Connection getConnection() {
-        if (connection == null) {
-            try {
-                Properties props = PropertiesLoader.loadProperty();
-
-                String url = props.getProperty("db.url");
-                String username = props.getProperty("db.username");
-                String password = props.getProperty("db.password");
-
-                connection = DriverManager.getConnection(url, username, password);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    public Connection getConnection() {
+        String connectionUrl = getUrl();
+        String connectionUsername = getUsername();
+        String connectionPassword = getPassword();
+        try {
+            return DriverManager.getConnection(connectionUrl, connectionUsername, connectionPassword);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
-        return connection;
     }
 
     public static class PropertiesLoader {
@@ -48,5 +50,29 @@ public class ConnectionManager {
             }
             return properties;
         }
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
