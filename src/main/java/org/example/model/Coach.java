@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Coach {
+
     private long id;
     private String firstName;
     private String lastName;
@@ -69,12 +70,30 @@ public class Coach {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o.getClass() != this.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null) {
+            return false;
+        }
+
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+
         Coach coach = (Coach) o;
-        if (id != coach.getId()) return false;
-        if (!getFirstName().equals(coach.getFirstName())) return false;
-        if (!getLastName().equals(coach.getLastName())) return false;
+        if (id != coach.getId()) {
+            return false;
+        }
+
+        if (!getFirstName().equals(coach.getFirstName())) {
+            return false;
+        }
+        if (!getLastName().equals(coach.getLastName())) {
+            return false;
+        }
+
         return getPhoneNumber().equals(coach.getPhoneNumber());
     }
 

@@ -3,6 +3,7 @@ package org.example.dto;
 import java.util.List;
 
 public class CoachDto {
+
     private long id;
     private String firstName;
     private String lastName;

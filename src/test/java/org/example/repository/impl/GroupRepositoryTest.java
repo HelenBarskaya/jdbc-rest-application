@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GroupRepositoryTest {
+
     static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres")
             .withTag("16.0"))
             .withDatabaseName("postgres-test-db")
@@ -40,6 +41,7 @@ class GroupRepositoryTest {
         connectionManager.setUrl(postgreSQLContainer.getJdbcUrl());
         connectionManager.setUsername(postgreSQLContainer.getUsername());
         connectionManager.setPassword(postgreSQLContainer.getPassword());
+
         groupRepository = new GroupRepository(connectionManager);
         coachRepository = new CoachRepository(connectionManager);
     }
@@ -47,7 +49,7 @@ class GroupRepositoryTest {
     @AfterEach
     void clear() {
         Connection connection = connectionManager.getConnection();
-        String clearTable = "Delete from groups";
+        String clearTable = "delete from groups";
         try (PreparedStatement preparedStatement = connection.prepareStatement(clearTable)) {
             preparedStatement.execute();
         } catch (SQLException e) {

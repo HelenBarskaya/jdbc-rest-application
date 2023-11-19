@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientDto {
+
     private long id;
     private String firstName;
     private String lastName;

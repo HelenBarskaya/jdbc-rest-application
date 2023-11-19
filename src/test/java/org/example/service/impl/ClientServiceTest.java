@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 class ClientServiceTest {
+
     ClientRepository clientRepository = Mockito.mock(ClientRepository.class);
     GroupRepository groupRepository = Mockito.mock(GroupRepository.class);
     ClientService clientService;

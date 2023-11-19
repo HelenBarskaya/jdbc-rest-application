@@ -13,6 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CoachServiceTest {
+
     CoachService coachService;
     CoachRepository coachRepository = Mockito.mock(CoachRepository.class);
     GroupRepository groupRepository = Mockito.mock(GroupRepository.class);
@@ -75,5 +76,4 @@ class CoachServiceTest {
 
         assertEquals(coach, coachService.update(coach));
     }
-
 }

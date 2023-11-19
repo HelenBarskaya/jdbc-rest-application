@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface GroupMapper {
 
-    Group groupDtoToGroup(GroupDto groupDto);
+    Group dtoToEntity(GroupDto groupDto);
 
-    GroupDto groupToGroupDto(Group group);
+    GroupDto entityToDto(Group group);
 }

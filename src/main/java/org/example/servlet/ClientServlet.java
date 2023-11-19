@@ -20,14 +20,19 @@ import java.util.List;
 
 @WebServlet("/client")
 public class ClientServlet extends HttpServlet {
-    ClientService clientService;
-    ClientMapper clientMapper;
-    ObjectMapper jsonMapper;
+
+    private ClientService clientService;
+    private ClientMapper clientMapper;
+    private ObjectMapper jsonMapper;
 
     @Override
     public void init() {
         ConnectionManager connectionManager = new ConnectionManager();
-        clientService = new ClientService(new ClientRepository(connectionManager), new GroupRepository(connectionManager));
+
+        clientService = new ClientService(
+                new ClientRepository(connectionManager),
+                new GroupRepository(connectionManager)
+        );
         clientMapper = Mappers.getMapper(ClientMapper.class);
         jsonMapper = new ObjectMapper();
     }
@@ -35,22 +40,29 @@ public class ClientServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String param = req.getParameter("id");
+
         if (param != null) {
             Long id = Long.parseLong(param);
             Client client = clientService.findById(id);
+
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            ClientDto dto = clientMapper.clientToClientDTO(client);
+
+            ClientDto dto = clientMapper.entityToDto(client);
             resp.getWriter().write(jsonMapper.writeValueAsString(dto));
+
             resp.setStatus(HttpServletResponse.SC_OK);
         } else {
             List<Client> clients = clientService.findAll();
             List<ClientDto> dto = new ArrayList<>();
+
             for (Client client : clients) {
-                dto.add(clientMapper.clientToClientDTO(client));
+                dto.add(clientMapper.entityToDto(client));
             }
+
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
+
             resp.getWriter().write(jsonMapper.writeValueAsString(dto));
             resp.setStatus(HttpServletResponse.SC_OK);
         }
@@ -59,18 +71,19 @@ public class ClientServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         ClientDto clientDto = jsonMapper.readValue(req.getInputStream().readAllBytes(), ClientDto.class);
-        clientService.save(clientMapper.clientDtoToClient(clientDto));
+        clientService.save(clientMapper.dtoToEntity(clientDto));
     }
 
     @Override
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         ClientDto clientDto = jsonMapper.readValue(req.getInputStream().readAllBytes(), ClientDto.class);
-        clientService.update(clientMapper.clientDtoToClient(clientDto));
+        clientService.update(clientMapper.dtoToEntity(clientDto));
     }
 
     @Override
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String param = req.getParameter("id");
+
         if (param != null) {
             Long id = Long.parseLong(param);
             clientService.deleteById(id);

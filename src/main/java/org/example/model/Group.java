@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Group {
+
     private long id;
     private String name;
     private Coach coach;
@@ -51,11 +52,26 @@ public class Group {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o.getClass() != this.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null) {
+            return false;
+        }
+
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+
         Group group = (Group) o;
-        if (id != group.getId()) return false;
-        if (!getName().equals(group.getName())) return false;
+        if (id != group.getId()) {
+            return false;
+        }
+        if (!getName().equals(group.getName())) {
+            return false;
+        }
+
         return (getCoach().getId() == (group.getCoach().getId()));
     }
 

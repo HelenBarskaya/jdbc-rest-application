@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
+
     private long id;
     private String firstName;
     private String lastName;
@@ -69,12 +70,30 @@ public class Client {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o.getClass() != this.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null) {
+            return false;
+        }
+
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+
         Client client = (Client) o;
-        if (id != client.getId()) return false;
-        if (!getFirstName().equals(client.getFirstName())) return false;
-        if (!getLastName().equals(client.getLastName())) return false;
+        if (id != client.getId()) {
+            return false;
+        }
+
+        if (!getFirstName().equals(client.getFirstName())) {
+            return false;
+        }
+        if (!getLastName().equals(client.getLastName())) {
+            return false;
+        }
+
         return getPhoneNumber().equals(client.getPhoneNumber());
     }
 

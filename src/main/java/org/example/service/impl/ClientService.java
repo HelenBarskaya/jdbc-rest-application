@@ -9,8 +9,9 @@ import org.example.service.SimpleService;
 import java.util.List;
 
 public class ClientService implements SimpleService<Client> {
-    GroupRepository groupRepository;
-    ClientRepository clientRepository;
+
+    private final GroupRepository groupRepository;
+    private final ClientRepository clientRepository;
 
     public ClientService(ClientRepository clientRepository, GroupRepository groupRepository) {
         this.groupRepository = groupRepository;
@@ -25,17 +26,17 @@ public class ClientService implements SimpleService<Client> {
     @Override
     public Client findById(Long id) {
         Client client = clientRepository.findById(id);
-        List<Group> groups = client.getGroups();
-        groups.replaceAll(group -> groupRepository.findById(group.getId()));
+        replaceGroups(client);
         return client;
     }
 
     public List<Client> findAll() {
         List<Client> clients = clientRepository.findAll();
+
         for (Client client : clients) {
-            List<Group> groups = client.getGroups();
-            groups.replaceAll(group -> groupRepository.findById(group.getId()));
+            replaceGroups(client);
         }
+
         return clients;
     }
 
@@ -53,5 +54,10 @@ public class ClientService implements SimpleService<Client> {
 
     public boolean removeGroup(Client client, Group group) {
         return clientRepository.removeGroup(client, group);
+    }
+
+    private void replaceGroups(Client client) {
+        List<Group> groups = client.getGroups();
+        groups.replaceAll(group -> groupRepository.findById(group.getId()));
     }
 }

@@ -6,7 +6,8 @@ import org.mapstruct.Mapper;
 
 @Mapper
 public interface CoachMapper {
-    Coach coachDtoToCoach(CoachDto coachDto);
 
-    CoachDto coachToCoachDto(Coach coach);
+    Coach dtoToEntity(CoachDto coachDto);
+
+    CoachDto entityToDto(Coach coach);
 }

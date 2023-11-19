@@ -1,6 +1,5 @@
 package org.example.model;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,21 +28,21 @@ class CoachTest {
     void getAndSetFirstNameTest() {
         assertNull(coach.getFirstName());
         coach.setFirstName("Анна");
-        Assertions.assertEquals("Анна", coach.getFirstName());
+        assertEquals("Анна", coach.getFirstName());
     }
 
     @Test
     void getAndSetLastNameTest() {
         assertNull(coach.getLastName());
         coach.setLastName("Морозова");
-        Assertions.assertEquals("Морозова", coach.getLastName());
+        assertEquals("Морозова", coach.getLastName());
     }
 
     @Test
     void getAndSetNumberPhoneTest() {
         assertNull(coach.getPhoneNumber());
         coach.setPhoneNumber("89379127450");
-        Assertions.assertEquals("89379127450", coach.getPhoneNumber());
+        assertEquals("89379127450", coach.getPhoneNumber());
     }
 
     @Test
@@ -51,6 +50,7 @@ class CoachTest {
         List<Group> groups = new ArrayList<>();
         Group group = new Group();
         assertTrue(coach.getGroups().isEmpty());
+
         groups.add(group);
         coach.setGroups(groups);
         assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
@@ -61,12 +61,13 @@ class CoachTest {
         List<Group> groups = new ArrayList<>();
         Group group = new Group();
         assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
+
         groups.add(group);
         coach.addGroup(group);
         assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
+
         groups.remove(group);
         coach.removeGroup(group);
         assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
     }
-
 }

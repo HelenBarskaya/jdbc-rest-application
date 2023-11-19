@@ -52,28 +52,3 @@ create table clients_groups
 
 alter table clients_groups
     owner to test;
---
--- insert into clients(firstname, lastname, phone_number)
--- values ('Маргарита', 'Мастерова', '86666666666'),
---        ('Анастасия', 'Романова', '89376124591'),
---        ('Станислав', 'Асафьев', '83560213495');
---
--- insert into coaches(firstname, lastname, phone_number)
--- values ('Светлана', 'Коваленко', '80239450137'),
---        ('Руслан', 'Греческий', '89217450134'),
---        ('Антон', 'Белоусов', '89120451734');
---
--- insert into groups(name, id_coach)
--- values ('Тайский бокс', 3),
---        ('Кроссфит', 1),
---        ('Растяжка', 2),
---        ('ММА', 1),
---        ('Бразильское джиу-джитсу', 3);
---
--- insert into clients_groups(id_client, id_group)
--- values (1, 1),
---        (1, 2),
---        (2, 1),
---        (2, 4),
---        (2, 5),
---        (3, 5);

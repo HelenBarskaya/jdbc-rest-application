@@ -1,6 +1,5 @@
 package org.example.model;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +13,7 @@ class GroupTest {
     Group group;
 
     @BeforeEach
-    void initMethod(){
+    void initMethod() {
         group = new Group();
     }
 
@@ -29,15 +28,16 @@ class GroupTest {
     void getAndSetNameTest() {
         assertNull(group.getName());
         group.setName("Кикбоксинг");
-        Assertions.assertEquals("Кикбоксинг", group.getName());
+        assertEquals("Кикбоксинг", group.getName());
     }
 
     @Test
     void getAndSetCoachTest() {
         assertNull(group.getCoach());
         Coach coach = new Coach();
+
         group.setCoach(coach);
-        Assertions.assertEquals(coach, group.getCoach());
+        assertEquals(coach, group.getCoach());
     }
 
     @Test
@@ -45,9 +45,9 @@ class GroupTest {
         List<Client> clients = new ArrayList<>();
         Client client = new Client();
         assertTrue(client.getGroups().isEmpty());
+
         clients.add(client);
         group.setClients(clients);
         assertArrayEquals(clients.toArray(), group.getClients().toArray());
     }
-
 }

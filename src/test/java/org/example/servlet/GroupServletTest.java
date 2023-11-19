@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class GroupServletTest {
+
     GroupServlet groupServlet;
     ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -109,5 +110,4 @@ class GroupServletTest {
         groupServlet.doDelete(request, response);
         Mockito.verify(service).deleteById(1L);
     }
-
 }

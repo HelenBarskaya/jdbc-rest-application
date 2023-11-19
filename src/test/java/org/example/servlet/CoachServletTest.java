@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class CoachServletTest {
+
     CoachServlet coachServlet;
     ObjectMapper jsonMapper = new ObjectMapper();
 

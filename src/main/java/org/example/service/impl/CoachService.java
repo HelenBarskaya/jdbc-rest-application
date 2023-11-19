@@ -10,8 +10,8 @@ import java.util.List;
 
 public class CoachService implements SimpleService<Coach> {
 
-    CoachRepository coachRepository;
-    GroupRepository groupRepository;
+    private final CoachRepository coachRepository;
+    private final GroupRepository groupRepository;
 
     public CoachService(CoachRepository coachRepository, GroupRepository groupRepository) {
         this.coachRepository = coachRepository;
@@ -19,32 +19,35 @@ public class CoachService implements SimpleService<Coach> {
     }
 
     @Override
-    public Coach save(Coach entity){
+    public Coach save(Coach entity) {
         return coachRepository.save(entity);
     }
 
     @Override
-    public Coach findById(Long id){
+    public Coach findById(Long id) {
         Coach coach = coachRepository.findById(id);
-        List<Group> groups = coach.getGroups();
-        groups.replaceAll(group -> groupRepository.findById(group.getId()));
+        replaceGroups(coach);
         return coach;
     }
 
-    public List<Coach> findAll(){
+    public List<Coach> findAll() {
         List<Coach> coaches = coachRepository.findAll();
         for (Coach coach : coaches) {
-            List<Group> groups = coach.getGroups();
-            groups.replaceAll(group -> groupRepository.findById(group.getId()));
+            replaceGroups(coach);
         }
         return coaches;
     }
 
-    public boolean deleteById(Long id){
+    public boolean deleteById(Long id) {
         return coachRepository.deleteById(id);
     }
 
-    public Coach update(Coach coach){
+    public Coach update(Coach coach) {
         return coachRepository.update(coach);
+    }
+
+    private void replaceGroups(Coach coach) {
+        List<Group> groups = coach.getGroups();
+        groups.replaceAll(group -> groupRepository.findById(group.getId()));
     }
 }

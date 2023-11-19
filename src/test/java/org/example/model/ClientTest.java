@@ -1,6 +1,5 @@
 package org.example.model;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,21 +28,21 @@ class ClientTest {
     void getAndSetFirstNameTest() {
         assertNull(client.getFirstName());
         client.setFirstName("Анна");
-        Assertions.assertEquals("Анна", client.getFirstName());
+        assertEquals("Анна", client.getFirstName());
     }
 
     @Test
     void getAndSetLastNameTest() {
         assertNull(client.getLastName());
         client.setLastName("Морозова");
-        Assertions.assertEquals("Морозова", client.getLastName());
+        assertEquals("Морозова", client.getLastName());
     }
 
     @Test
     void getAndSetNumberPhoneTest() {
         assertNull(client.getPhoneNumber());
         client.setPhoneNumber("89379127450");
-        Assertions.assertEquals("89379127450", client.getPhoneNumber());
+        assertEquals("89379127450", client.getPhoneNumber());
     }
 
     @Test
@@ -51,6 +50,7 @@ class ClientTest {
         List<Group> groups = new ArrayList<>();
         Group group = new Group();
         assertTrue(client.getGroups().isEmpty());
+
         groups.add(group);
         client.setGroups(groups);
         assertArrayEquals(groups.toArray(), client.getGroups().toArray());
@@ -61,12 +61,13 @@ class ClientTest {
         List<Group> groups = new ArrayList<>();
         Group group = new Group();
         assertTrue(client.getGroups().isEmpty());
+
         groups.add(group);
         client.addGroup(group);
         assertArrayEquals(groups.toArray(), client.getGroups().toArray());
+
         groups.remove(group);
         client.removeGroup(group);
         assertArrayEquals(groups.toArray(), client.getGroups().toArray());
     }
-
 }

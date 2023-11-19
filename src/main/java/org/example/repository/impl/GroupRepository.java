@@ -25,7 +25,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
         List<Client> clients = new ArrayList<>();
 
         String findById = "select g.id, g.name, g.id_coach, c.id from groups g left join clients_groups cg " +
-                "on g.id = cg.id_group left join clients c on cg.id_client = c.id where g.id = ?\n";
+                "on g.id = cg.id_group left join clients c on cg.id_client = c.id where g.id = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(findById)) {
             preparedStatement.setLong(1, id);
@@ -40,13 +40,15 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
                     client.setId(rs.getLong(4));
                     clients.add(client);
                 } while (rs.next());
+
                 group.setCoach(coach);
                 group.setClients(clients);
                 return group;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
+
         return null;
     }
 
@@ -61,7 +63,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             preparedStatement.execute();
             return true;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -83,7 +85,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             }
             return groups;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -99,7 +101,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
 
             return returnSavedGroup(preparedStatement);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -112,19 +114,22 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             preparedStatement.setLong(3, group.getId());
             int resp = preparedStatement.executeUpdate();
 
-            if (resp == 0) throw new SQLException();
+            if (resp == 0) {
+                throw new SQLException();
+            }
 
             return group;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
-    private Group returnSavedGroup(PreparedStatement preparedStatement){
+    private Group returnSavedGroup(PreparedStatement preparedStatement) {
         Group savedGroup = new Group();
         try (ResultSet key = preparedStatement.getGeneratedKeys()) {
-            Coach coach = new Coach();
             key.next();
+
+            Coach coach = new Coach();
             coach.setId(key.getLong("id_coach"));
             savedGroup.setId(key.getLong("id"));
             savedGroup.setName(key.getString("name"));
@@ -132,7 +137,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
 
             return savedGroup;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

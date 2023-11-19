@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CoachRepositoryTest {
+
     static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres")
             .withTag("16.0"))
             .withDatabaseName("postgres-test-db")
@@ -38,13 +39,14 @@ class CoachRepositoryTest {
         connectionManager.setUrl(postgreSQLContainer.getJdbcUrl());
         connectionManager.setUsername(postgreSQLContainer.getUsername());
         connectionManager.setPassword(postgreSQLContainer.getPassword());
+
         coachRepository = new CoachRepository(connectionManager);
     }
 
     @AfterEach
     void clear() {
         Connection connection = connectionManager.getConnection();
-        String clearTable = "Delete from coaches";
+        String clearTable = "delete from coaches";
         try (PreparedStatement preparedStatement = connection.prepareStatement(clearTable)) {
             preparedStatement.execute();
         } catch (SQLException e) {

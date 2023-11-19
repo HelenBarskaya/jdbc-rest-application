@@ -14,41 +14,28 @@ public class ConnectionManager {
     private String password;
 
     public ConnectionManager() {
-        try {
-            Properties props = PropertiesLoader.loadProperty();
+        Properties props;
 
-            url = props.getProperty("db.url");
-            username = props.getProperty("db.username");
-            password = props.getProperty("db.password");
+        try {
+            props = PropertiesLoader.loadProperty();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
+
+        url = props.getProperty("db.url");
+        username = props.getProperty("db.username");
+        password = props.getProperty("db.password");
     }
 
     public Connection getConnection() {
         String connectionUrl = getUrl();
         String connectionUsername = getUsername();
         String connectionPassword = getPassword();
+
         try {
             return DriverManager.getConnection(connectionUrl, connectionUsername, connectionPassword);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static class PropertiesLoader {
-        private static final Properties properties = new Properties();
-
-        private PropertiesLoader() {
-        }
-
-        public static Properties loadProperty() throws IOException {
-            if (properties.isEmpty()) {
-                InputStream inputStream = ConnectionManager.class.getClassLoader()
-                        .getResourceAsStream("database.properties");
-                properties.load(inputStream);
-            }
-            return properties;
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -74,5 +61,21 @@ public class ConnectionManager {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public static class PropertiesLoader {
+        private static final Properties properties = new Properties();
+
+        private PropertiesLoader() {
+        }
+
+        public static Properties loadProperty() throws IOException {
+            if (properties.isEmpty()) {
+                InputStream inputStream = ConnectionManager.class.getClassLoader()
+                        .getResourceAsStream("database.properties");
+                properties.load(inputStream);
+            }
+            return properties;
+        }
     }
 }

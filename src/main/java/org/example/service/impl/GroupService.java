@@ -11,11 +11,14 @@ import org.example.service.SimpleService;
 import java.util.List;
 
 public class GroupService implements SimpleService<Group> {
-    GroupRepository groupRepository;
-    ClientRepository clientRepository;
-    CoachRepository coachRepository;
 
-    public GroupService(GroupRepository groupRepository, ClientRepository clientRepository, CoachRepository coachRepository) {
+    private final GroupRepository groupRepository;
+    private final ClientRepository clientRepository;
+    private final CoachRepository coachRepository;
+
+    public GroupService(GroupRepository groupRepository,
+                        ClientRepository clientRepository,
+                        CoachRepository coachRepository) {
         this.groupRepository = groupRepository;
         this.clientRepository = clientRepository;
         this.coachRepository = coachRepository;
@@ -30,9 +33,9 @@ public class GroupService implements SimpleService<Group> {
     public Group findById(Long id) {
         Group group = groupRepository.findById(id);
         Coach coach = coachRepository.findById(group.getCoach().getId());
-        List<Client> clients = group.getClients();
 
-        clients.replaceAll(client -> clientRepository.findById(client.getId()));
+        replaceClients(group);
+
         group.setCoach(coach);
         return group;
     }
@@ -44,8 +47,7 @@ public class GroupService implements SimpleService<Group> {
             Coach coach = coachRepository.findById(group.getCoach().getId());
             group.setCoach(coach);
 
-            List<Client> clients = group.getClients();
-            clients.replaceAll(client -> clientRepository.findById(client.getId()));
+            replaceClients(group);
         }
         return groups;
     }
@@ -56,5 +58,10 @@ public class GroupService implements SimpleService<Group> {
 
     public Group update(Group group) {
         return groupRepository.update(group);
+    }
+
+    private void replaceClients(Group group) {
+        List<Client> clients = group.getClients();
+        clients.replaceAll(client -> clientRepository.findById(client.getId()));
     }
 }

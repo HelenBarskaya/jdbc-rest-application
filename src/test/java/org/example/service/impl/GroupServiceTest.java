@@ -15,6 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GroupServiceTest {
+
     GroupService groupService;
     GroupRepository groupRepository = Mockito.mock(GroupRepository.class);
     ClientRepository clientRepository = Mockito.mock(ClientRepository.class);
@@ -84,5 +85,4 @@ class GroupServiceTest {
 
         assertEquals(group, groupService.update(group));
     }
-
 }
