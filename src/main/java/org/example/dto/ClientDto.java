@@ -10,6 +10,15 @@ public class ClientDto {
     private String phoneNumber;
     private List<GroupDto> groups = new ArrayList<>();
 
+    public ClientDto() {
+    }
+
+    public ClientDto(String firstName, String lastName, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+    }
+
     public long getId() {
         return id;
     }
