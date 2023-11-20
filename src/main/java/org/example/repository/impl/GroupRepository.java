@@ -21,22 +21,23 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
     private static final String REMOVE_LINKS_COMMAND = "delete from clients_groups where id_group = ?;";
     private static final String DELETE_BY_ID_COMMAND = "delete from groups where id=?";
 
-     private static final String SAVE_GROUP_COMMAND = "insert into groups(name, id_coach) values (?,?)";
-     private static final String UPDATE_GROUP_COMMAND = "update groups set name=?, id_coach=? where id=?";
+    private static final String SAVE_GROUP_COMMAND = "insert into groups(name, id_coach) values (?,?)";
+    private static final String UPDATE_GROUP_COMMAND = "update groups set name=?, id_coach=? where id=?";
 
-    private final Connection connection;
+    private final ConnectionManager connectionManager;
 
     public GroupRepository(ConnectionManager connectionManager) {
-        connection = connectionManager.getConnection();
+        this.connectionManager = connectionManager;
     }
 
     @Override
-    public Group findById(Long id) {
+    public Group findById(Long id) throws IllegalArgumentException, IllegalStateException {
         Group group = new Group();
         Coach coach = new Coach();
         List<Client> clients = new ArrayList<>();
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ID_COMMAND)) {
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -58,13 +59,14 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
             throw new IllegalStateException(e);
         }
 
-        return null;
+        throw new IllegalArgumentException();
     }
 
     @Override
     public boolean deleteById(Long id) {
-        try (PreparedStatement preparedStatement = connection
-                .prepareStatement(REMOVE_LINKS_COMMAND + DELETE_BY_ID_COMMAND)) {
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection
+                     .prepareStatement(REMOVE_LINKS_COMMAND + DELETE_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             preparedStatement.setLong(2, id);
             preparedStatement.execute();
@@ -77,8 +79,9 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
     @Override
     public List<Group> findAll() {
 
-        try (PreparedStatement stmt = connection.prepareStatement(GET_ALL_ID_COMMAND)) {
-            ResultSet rs = stmt.executeQuery();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_ID_COMMAND)) {
+            ResultSet rs = preparedStatement.executeQuery();
 
             List<Long> indexes = new ArrayList<>();
             while (rs.next()) {
@@ -97,8 +100,9 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
 
     @Override
     public Group save(Group group) {
-        try (PreparedStatement preparedStatement = connection
-                .prepareStatement(SAVE_GROUP_COMMAND, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection
+                     .prepareStatement(SAVE_GROUP_COMMAND, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, group.getName());
             preparedStatement.setLong(2, group.getCoach().getId());
             preparedStatement.executeUpdate();
@@ -110,7 +114,8 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
     }
 
     public Group update(Group group) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_GROUP_COMMAND)) {
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_GROUP_COMMAND)) {
             preparedStatement.setString(1, group.getName());
             preparedStatement.setLong(2, group.getCoach().getId());
             preparedStatement.setLong(3, group.getId());

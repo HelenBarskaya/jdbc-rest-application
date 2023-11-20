@@ -45,28 +45,36 @@ public class GroupServlet extends HttpServlet {
 
         if (param != null) {
             Long id = Long.parseLong(param);
-            Group group = groupService.findById(id);
+            try {
+                Group group = groupService.findById(id);
 
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
 
-            GroupDto dto = groupMapper.entityToDto(group);
-            resp.getWriter().write(jsonMapper.writeValueAsString(dto));
+                GroupDto dto = groupMapper.entityToDto(group);
+                resp.getWriter().write(jsonMapper.writeValueAsString(dto));
 
-            resp.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            List<Group> groups = groupService.findAll();
-            List<GroupDto> dto = new ArrayList<>();
-
-            for (Group group : groups) {
-                dto.add(groupMapper.entityToDto(group));
+                resp.setStatus(HttpServletResponse.SC_OK);
+            } catch (IllegalStateException | IllegalArgumentException e){
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
+        } else {
+            try {
+                List<Group> groups = groupService.findAll();
+                List<GroupDto> dto = new ArrayList<>();
 
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
+                for (Group group : groups) {
+                    dto.add(groupMapper.entityToDto(group));
+                }
 
-            resp.getWriter().write(jsonMapper.writeValueAsString(dto));
-            resp.setStatus(HttpServletResponse.SC_OK);
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+
+                resp.getWriter().write(jsonMapper.writeValueAsString(dto));
+                resp.setStatus(HttpServletResponse.SC_OK);
+            } catch (IllegalStateException | IllegalArgumentException e){
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
         }
     }
 

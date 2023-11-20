@@ -73,7 +73,7 @@ class GroupRepositoryTest {
         groupRepository.deleteById(group.getId());
 
         assertNotNull(coachRepository.findById(coach.getId()));
-        assertNull(groupRepository.findById(group.getId()));
+        assertThrows(IllegalArgumentException.class,() -> groupRepository.findById(group.getId()));
     }
 
     @Test

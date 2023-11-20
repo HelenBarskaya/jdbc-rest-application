@@ -55,21 +55,29 @@ class ClientRepositoryTest {
 
     @Test
     void createClientTest() {
-        Client client = clientRepository.save(new Client("Анна", "Ахматова", "89379120428"));
+        Client client = clientRepository.save(
+                new Client("Анна", "Ахматова", "89379120428")
+        );
         assertEquals(client, clientRepository.findById(client.getId()));
     }
 
     @Test
-    void deleteClientTest(){
-        Client client = clientRepository.save(new Client("Анна", "Ахматова", "89379120428"));
+    void deleteClientTest() {
+        Client client = clientRepository.save(
+                new Client("Анна", "Ахматова", "89379120428")
+        );
         clientRepository.deleteById(client.getId());
-        assertNull(clientRepository.findById(client.getId()));
+        assertThrows(IllegalArgumentException.class, () -> clientRepository.findById(client.getId()));
     }
 
     @Test
-    void findAllTest(){
-        Client client1 = clientRepository.save(new Client("Маргарита", "Мастерова", "86666666666"));
-        Client client2 = clientRepository.save(new Client("Анна", "Ахматова", "89379120428"));
+    void findAllTest() {
+        Client client1 = clientRepository.save(
+                new Client("Маргарита", "Мастерова", "86666666666")
+        );
+        Client client2 = clientRepository.save(
+                new Client("Анна", "Ахматова", "89379120428")
+        );
 
         assertEquals(2, clientRepository.findAll().size());
         assertEquals(client1, clientRepository.findById(client1.getId()));
@@ -77,8 +85,10 @@ class ClientRepositoryTest {
     }
 
     @Test
-    void updateTest(){
-        Client client = clientRepository.save(new Client("Маргарита", "Мастерова", "86666666666"));
+    void updateTest() {
+        Client client = clientRepository.save(
+                new Client("Маргарита", "Мастерова", "86666666666")
+        );
         client.setFirstName("Мастер");
         client.setLastName("Маргаритов");
         clientRepository.update(client);

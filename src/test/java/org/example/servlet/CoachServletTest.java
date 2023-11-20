@@ -48,6 +48,16 @@ class CoachServletTest {
     }
 
     @Test
+    void doGetCoachByIllegalIdTest() throws IOException {
+
+        Mockito.when(service.findById(1L)).thenThrow(new IllegalArgumentException());
+        Mockito.when(request.getParameter("id")).thenReturn("1");
+
+        coachServlet.doGet(request, response);
+        Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    @Test
     void doGetCoachesTest() throws IOException {
         Coach coach1 = new Coach("Маргарита", "Мастерова", "86666666666");
         coach1.setId(1);

@@ -43,28 +43,36 @@ public class CoachServlet extends HttpServlet {
 
         if (param != null) {
             Long id = Long.parseLong(param);
-            Coach coach = coachService.findById(id);
+            try {
+                Coach coach = coachService.findById(id);
 
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
 
-            CoachDto dto = coachMapper.entityToDto(coach);
+                CoachDto dto = coachMapper.entityToDto(coach);
 
-            resp.getWriter().write(jsonMapper.writeValueAsString(dto));
-            resp.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            List<Coach> coaches = coachService.findAll();
-            List<CoachDto> dto = new ArrayList<>();
-
-            for (Coach coach : coaches) {
-                dto.add(coachMapper.entityToDto(coach));
+                resp.getWriter().write(jsonMapper.writeValueAsString(dto));
+                resp.setStatus(HttpServletResponse.SC_OK);
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
+        } else {
+            try {
+                List<Coach> coaches = coachService.findAll();
+                List<CoachDto> dto = new ArrayList<>();
 
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
+                for (Coach coach : coaches) {
+                    dto.add(coachMapper.entityToDto(coach));
+                }
 
-            resp.getWriter().write(jsonMapper.writeValueAsString(dto));
-            resp.setStatus(HttpServletResponse.SC_OK);
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+
+                resp.getWriter().write(jsonMapper.writeValueAsString(dto));
+                resp.setStatus(HttpServletResponse.SC_OK);
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
         }
     }
 

@@ -64,13 +64,17 @@ class CoachRepositoryTest {
     void deleteCoachTest(){
         Coach coach = coachRepository.save(new Coach("Анна", "Ахматова", "89379120428"));
         coachRepository.deleteById(coach.getId());
-        assertNull(coachRepository.findById(coach.getId()));
+        assertThrows(IllegalArgumentException.class,() -> coachRepository.findById(coach.getId()));
     }
 
     @Test
     void findAllTest(){
-        Coach coach1 = coachRepository.save(new Coach("Маргарита", "Мастерова", "86666666666"));
-        Coach coach2 = coachRepository.save(new Coach("Анна", "Ахматова", "89379120428"));
+        Coach coach1 = coachRepository.save(
+                new Coach("Маргарита", "Мастерова", "86666666666")
+        );
+        Coach coach2 = coachRepository.save(
+                new Coach("Анна", "Ахматова", "89379120428")
+        );
 
         assertEquals(2, coachRepository.findAll().size());
         assertEquals(coach1, coachRepository.findById(coach1.getId()));
@@ -79,7 +83,9 @@ class CoachRepositoryTest {
 
     @Test
     void updateTest(){
-        Coach coach = coachRepository.save(new Coach("Маргарита", "Мастерова", "86666666666"));
+        Coach coach = coachRepository.save(
+                new Coach("Маргарита", "Мастерова", "86666666666")
+        );
         coach.setFirstName("Мастер");
         coach.setLastName("Маргаритов");
         coachRepository.update(coach);

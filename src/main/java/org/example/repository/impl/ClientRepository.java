@@ -25,18 +25,19 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
     private static final String UPDATE_CLIENT = "update clients set firstname = ?, lastname = ?, phone_number = ? " +
             "where id = ?";
 
-    private final Connection connection;
+    private final ConnectionManager connectionManager;
 
     public ClientRepository(ConnectionManager connectionManager) {
-        connection = connectionManager.getConnection();
+        this.connectionManager = connectionManager;
     }
 
     @Override
-    public Client findById(Long id) {
+    public Client findById(Long id) throws IllegalArgumentException, IllegalStateException{
         Client client = new Client();
         List<Group> groups = new ArrayList<>();
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ID_COMMAND)) {
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -59,12 +60,13 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
             throw new IllegalStateException(e);
         }
 
-        return null;
+        throw new IllegalArgumentException();
     }
 
     @Override
     public boolean deleteById(Long id) {
-        try (PreparedStatement preparedStatement =
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement =
                      connection.prepareStatement(REMOVE_REFS_COMMAND + DELETE_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             preparedStatement.setLong(2, id);
@@ -78,7 +80,8 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
 
     @Override
     public List<Client> findAll() {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_ID)) {
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_ID)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             List<Long> indexes = new ArrayList<>();
@@ -100,7 +103,8 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
 
     @Override
     public Client save(Client client) {
-        try (PreparedStatement preparedStatement =
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement =
                      connection.prepareStatement(SAVE_CLIENT, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, client.getFirstName());
             preparedStatement.setString(2, client.getLastName());
@@ -114,7 +118,8 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
     }
 
     public Client update(Client client) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CLIENT)) {
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CLIENT)) {
             preparedStatement.setString(1, client.getFirstName());
             preparedStatement.setString(2, client.getLastName());
             preparedStatement.setString(3, client.getPhoneNumber());

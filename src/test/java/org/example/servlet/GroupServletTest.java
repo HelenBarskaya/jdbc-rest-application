@@ -52,6 +52,16 @@ class GroupServletTest {
     }
 
     @Test
+    void doGetGroupByIllegalIdTest() throws IOException {
+
+        Mockito.when(service.findById(1L)).thenThrow(new IllegalArgumentException());
+        Mockito.when(request.getParameter("id")).thenReturn("1");
+
+        groupServlet.doGet(request, response);
+        Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    @Test
     void doGetGroupsTest() throws IOException {
         Coach coach = new Coach("Маргарита", "Мастерова", "86666666666");
         coach.setId(1);

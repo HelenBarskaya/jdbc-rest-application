@@ -24,7 +24,7 @@ public class ClientService implements SimpleService<Client> {
     }
 
     @Override
-    public Client findById(Long id) {
+    public Client findById(Long id){
         Client client = clientRepository.findById(id);
         replaceGroups(client);
         return client;

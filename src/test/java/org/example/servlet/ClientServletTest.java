@@ -48,6 +48,16 @@ class ClientServletTest {
     }
 
     @Test
+    void doGetClientByIllegalIdTest() throws IOException {
+
+        Mockito.when(service.findById(1L)).thenThrow(new IllegalArgumentException());
+        Mockito.when(request.getParameter("id")).thenReturn("1");
+
+        clientServlet.doGet(request, response);
+        Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    @Test
     void doGetClientsTest() throws IOException {
         Client client1 = new Client("Маргарита", "Мастерова", "86666666666");
         client1.setId(1);
