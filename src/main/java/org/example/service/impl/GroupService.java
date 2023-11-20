@@ -8,9 +8,10 @@ import org.example.repository.impl.CoachRepository;
 import org.example.repository.impl.GroupRepository;
 import org.example.service.SimpleService;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class GroupService implements SimpleService<Group> {
+public class GroupService implements SimpleService<Group>, Serializable {
 
     private final GroupRepository groupRepository;
     private final ClientRepository clientRepository;
