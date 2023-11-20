@@ -1,4 +1,4 @@
-package org.example.repository.mapping;
+package org.example.servlet.mapping;
 
 import org.example.dto.GroupDto;
 import org.example.model.Group;

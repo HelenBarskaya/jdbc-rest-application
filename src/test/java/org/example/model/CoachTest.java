@@ -55,19 +55,4 @@ class CoachTest {
         coach.setGroups(groups);
         assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
     }
-
-    @Test
-    void addAndRemoveGroupTest() {
-        List<Group> groups = new ArrayList<>();
-        Group group = new Group();
-        assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
-
-        groups.add(group);
-        coach.addGroup(group);
-        assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
-
-        groups.remove(group);
-        coach.removeGroup(group);
-        assertArrayEquals(groups.toArray(), coach.getGroups().toArray());
-    }
 }

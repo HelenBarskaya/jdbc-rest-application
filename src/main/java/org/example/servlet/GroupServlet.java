@@ -11,7 +11,7 @@ import org.example.model.Group;
 import org.example.repository.impl.ClientRepository;
 import org.example.repository.impl.CoachRepository;
 import org.example.repository.impl.GroupRepository;
-import org.example.repository.mapping.GroupMapper;
+import org.example.servlet.mapping.GroupMapper;
 import org.example.service.impl.GroupService;
 import org.mapstruct.factory.Mappers;
 
@@ -22,15 +22,13 @@ import java.util.List;
 @WebServlet("/group")
 public class GroupServlet extends HttpServlet {
 
-    private ConnectionManager connectionManager;
-
     private GroupService groupService;
     private GroupMapper groupMapper;
     private ObjectMapper jsonMapper;
 
     @Override
     public void init() {
-        connectionManager = new ConnectionManager();
+        ConnectionManager connectionManager = new ConnectionManager();
 
         groupService = new GroupService(
                 new GroupRepository(connectionManager),

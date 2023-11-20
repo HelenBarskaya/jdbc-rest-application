@@ -55,19 +55,4 @@ class ClientTest {
         client.setGroups(groups);
         assertArrayEquals(groups.toArray(), client.getGroups().toArray());
     }
-
-    @Test
-    void addAndRemoveGroupTest() {
-        List<Group> groups = new ArrayList<>();
-        Group group = new Group();
-        assertTrue(client.getGroups().isEmpty());
-
-        groups.add(group);
-        client.addGroup(group);
-        assertArrayEquals(groups.toArray(), client.getGroups().toArray());
-
-        groups.remove(group);
-        client.removeGroup(group);
-        assertArrayEquals(groups.toArray(), client.getGroups().toArray());
-    }
 }

@@ -48,14 +48,6 @@ public class ClientService implements SimpleService<Client> {
         return clientRepository.update(client);
     }
 
-    public Group addGroup(Client client, Group group) {
-        return clientRepository.addGroup(client, group);
-    }
-
-    public boolean removeGroup(Client client, Group group) {
-        return clientRepository.removeGroup(client, group);
-    }
-
     private void replaceGroups(Client client) {
         List<Group> groups = client.getGroups();
         groups.replaceAll(group -> groupRepository.findById(group.getId()));

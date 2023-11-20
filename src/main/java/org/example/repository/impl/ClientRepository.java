@@ -24,7 +24,6 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
     private static final String SAVE_CLIENT = "insert into clients(firstname, lastname,phone_number) values (?, ?, ?)";
     private static final String UPDATE_CLIENT = "update clients set firstname = ?, lastname = ?, phone_number = ? " +
             "where id = ?";
-    private static final String ADD_GROUP = "insert into clients_groups(id_client, id_group) values (?, ?)";
 
     private final Connection connection;
 
@@ -130,31 +129,6 @@ public class ClientRepository implements SimpleRepository<Client, Long> {
         }
 
         return client;
-    }
-
-    public Group addGroup(Client client, Group group) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(ADD_GROUP)) {
-            preparedStatement.setLong(1, client.getId());
-            preparedStatement.setLong(2, group.getId());
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return group;
-    }
-
-    public boolean removeGroup(Client client, Group group) {
-        // TODO: 19.11.2023 make static private
-        String addGroup = "delete from clients_groups where id_client = ? and id_group = ?";
-        try (PreparedStatement preparedStatement = connection
-                .prepareStatement(addGroup)) {
-            preparedStatement.setLong(1, client.getId());
-            preparedStatement.setLong(2, group.getId());
-            return preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     private Client returnSavedClient(PreparedStatement preparedStatement) {

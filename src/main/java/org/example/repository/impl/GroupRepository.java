@@ -12,6 +12,18 @@ import java.util.List;
 
 public class GroupRepository implements SimpleRepository<Group, Long> {
 
+    private static final String SELECT_BY_ID_COMMAND = "select g.id, g.name, g.id_coach, c.id from groups g " +
+            "left join clients_groups cg on g.id = cg.id_group " +
+            "left join clients c on cg.id_client = c.id where g.id = ?";
+    private static final String GET_ALL_ID_COMMAND = "select g.id from groups g " +
+            "left join clients_groups cg on g.id=cg.id_group group by g.id";
+
+    private static final String REMOVE_LINKS_COMMAND = "delete from clients_groups where id_group = ?;";
+    private static final String DELETE_BY_ID_COMMAND = "delete from groups where id=?";
+
+     private static final String SAVE_GROUP_COMMAND = "insert into groups(name, id_coach) values (?,?)";
+     private static final String UPDATE_GROUP_COMMAND = "update groups set name=?, id_coach=? where id=?";
+
     private final Connection connection;
 
     public GroupRepository(ConnectionManager connectionManager) {
@@ -24,10 +36,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
         Coach coach = new Coach();
         List<Client> clients = new ArrayList<>();
 
-        String findById = "select g.id, g.name, g.id_coach, c.id from groups g left join clients_groups cg " +
-                "on g.id = cg.id_group left join clients c on cg.id_client = c.id where g.id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(findById)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -54,10 +63,8 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
 
     @Override
     public boolean deleteById(Long id) {
-        String removeLinks = "delete from clients_groups where id_group = ?;";
-        String deleteById = "delete from groups where id=?";
         try (PreparedStatement preparedStatement = connection
-                .prepareStatement(removeLinks + deleteById)) {
+                .prepareStatement(REMOVE_LINKS_COMMAND + DELETE_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             preparedStatement.setLong(2, id);
             preparedStatement.execute();
@@ -69,9 +76,8 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
 
     @Override
     public List<Group> findAll() {
-        String getAllId = "select g.id from groups g left join clients_groups cg on g.id=cg.id_group group by g.id";
 
-        try (PreparedStatement stmt = connection.prepareStatement(getAllId)) {
+        try (PreparedStatement stmt = connection.prepareStatement(GET_ALL_ID_COMMAND)) {
             ResultSet rs = stmt.executeQuery();
 
             List<Long> indexes = new ArrayList<>();
@@ -91,10 +97,8 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
 
     @Override
     public Group save(Group group) {
-        String saveGroup = "insert into groups(name, id_coach) values (?,?)";
-
         try (PreparedStatement preparedStatement = connection
-                .prepareStatement(saveGroup, Statement.RETURN_GENERATED_KEYS)) {
+                .prepareStatement(SAVE_GROUP_COMMAND, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, group.getName());
             preparedStatement.setLong(2, group.getCoach().getId());
             preparedStatement.executeUpdate();
@@ -106,9 +110,7 @@ public class GroupRepository implements SimpleRepository<Group, Long> {
     }
 
     public Group update(Group group) {
-        String updateGroup = "Update groups set name=?, id_coach=? where id=?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(updateGroup)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_GROUP_COMMAND)) {
             preparedStatement.setString(1, group.getName());
             preparedStatement.setLong(2, group.getCoach().getId());
             preparedStatement.setLong(3, group.getId());

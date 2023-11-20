@@ -10,7 +10,7 @@ import org.example.dto.CoachDto;
 import org.example.model.Coach;
 import org.example.repository.impl.CoachRepository;
 import org.example.repository.impl.GroupRepository;
-import org.example.repository.mapping.CoachMapper;
+import org.example.servlet.mapping.CoachMapper;
 import org.example.service.impl.CoachService;
 import org.mapstruct.factory.Mappers;
 

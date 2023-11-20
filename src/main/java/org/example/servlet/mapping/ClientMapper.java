@@ -1,4 +1,4 @@
-package org.example.repository.mapping;
+package org.example.servlet.mapping;
 
 import org.example.dto.ClientDto;
 import org.example.model.Client;

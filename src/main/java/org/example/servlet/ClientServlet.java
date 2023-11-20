@@ -9,7 +9,7 @@ import org.example.database.ConnectionManager;
 import org.example.dto.ClientDto;
 import org.example.repository.impl.ClientRepository;
 import org.example.repository.impl.GroupRepository;
-import org.example.repository.mapping.ClientMapper;
+import org.example.servlet.mapping.ClientMapper;
 import org.example.model.Client;
 import org.example.service.impl.ClientService;
 import org.mapstruct.factory.Mappers;

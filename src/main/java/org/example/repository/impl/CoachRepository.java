@@ -11,6 +11,18 @@ import java.util.List;
 
 public class CoachRepository implements SimpleRepository<Coach, Long> {
 
+    private static final String SELECT_BY_ID_COMMAND = "select c.id, c.firstname, c.lastname, c.phone_number, g.id " +
+            "from coaches c left join groups g on c.id=g.id_coach where c.id=?";
+    private static final String GET_ALL_ID_COMMAND = "select c.id from coaches c " +
+            "left join groups g on c.id=g.id_coach group by c.id";
+
+    private static final String DELETE_BY_ID_COMMAND = "delete from coaches where id=?";
+
+    private static final String SAVE_COACH_COMMAND = "insert into coaches(firstname, lastname,phone_number) " +
+            "values (?, ?, ?)";
+    private static final String UPDATE_CLIENT_COMMAND = "Update coaches set firstname=?, lastname=?, phone_number=? " +
+            "where id=?";
+
     private final Connection connection;
     private final GroupRepository groupRepository;
 
@@ -24,10 +36,7 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
         Coach coach = new Coach();
         List<Group> groups = new ArrayList<>();
 
-        // TODO: 19.11.2023 make static private
-        String selectById = "select c.id, c.firstname, c.lastname, c.phone_number, g.id from coaches c " +
-                "left join groups g on c.id=g.id_coach where c.id=?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(selectById)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -57,9 +66,7 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
     public boolean deleteById(Long id) {
         groupRepository.deleteById(id);
 
-        // TODO: 19.11.2023 make static private
-        String deleteById = "delete from coaches where id=?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(deleteById)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_ID_COMMAND)) {
             preparedStatement.setLong(1, id);
             preparedStatement.execute();
         } catch (SQLException e) {
@@ -71,9 +78,7 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
 
     @Override
     public List<Coach> findAll() {
-        // TODO: 19.11.2023 make static private
-        String getAllId = "select c.id from coaches c left join groups g on c.id=g.id_coach group by c.id";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getAllId)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_ID_COMMAND)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             List<Long> indexes = new ArrayList<>();
@@ -94,11 +99,8 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
 
     @Override
     public Coach save(Coach coach) {
-        // TODO: 19.11.2023 make static private
-        String saveCoach = "insert into coaches(firstname, lastname,phone_number) values (?, ?, ?)";
-
         try (PreparedStatement preparedStatement =
-                     connection.prepareStatement(saveCoach, Statement.RETURN_GENERATED_KEYS)) {
+                     connection.prepareStatement(SAVE_COACH_COMMAND, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, coach.getFirstName());
             preparedStatement.setString(2, coach.getLastName());
             preparedStatement.setString(3, coach.getPhoneNumber());
@@ -111,9 +113,7 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
     }
 
     public Coach update(Coach coach) {
-        // TODO: 19.11.2023 make static private
-        String updateClient = "Update coaches set firstname=?, lastname=?, phone_number=? where id=?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(updateClient)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CLIENT_COMMAND)) {
             preparedStatement.setString(1, coach.getFirstName());
             preparedStatement.setString(2, coach.getLastName());
             preparedStatement.setString(3, coach.getPhoneNumber());
@@ -125,22 +125,6 @@ public class CoachRepository implements SimpleRepository<Coach, Long> {
             }
 
             return coach;
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public Coach changePhoneNumber(Coach coach) {
-        // TODO: 19.11.2023 make static private
-        String updatePhoneNumber = "update coaches set phone_number=? where id=?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(updatePhoneNumber,
-                Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, coach.getPhoneNumber());
-            preparedStatement.setLong(2, coach.getId());
-            preparedStatement.execute();
-
-            return returnSavedCoach(preparedStatement);
         } catch (SQLException e) {
             throw new IllegalStateException(e);
         }

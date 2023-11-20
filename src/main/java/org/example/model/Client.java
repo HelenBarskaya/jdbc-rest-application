@@ -60,14 +60,6 @@ public class Client {
         this.groups = groups;
     }
 
-    public boolean addGroup(Group group) {
-        return groups.add(group);
-    }
-
-    public boolean removeGroup(Group group) {
-        return groups.remove(group);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
